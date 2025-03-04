@@ -22,11 +22,8 @@ ListItem* GetLast(ListItem* firstItem)
 {
 	if (firstItem == nullptr) return nullptr; // если список пуст, то вернем пустой указатель
 	auto temp = firstItem; // временной переменной присваиваем указатель на первый элемент
-	while (temp->next != nullptr) // пока ее поле next не пустой указатель (если пустой, то мы достигли последнего элемента!)
-	{
-		// запомните это присваивание - это переход к следующему в списке элементу
+	while (temp->next != nullptr)
 		temp = temp->next;  // перемещаемся к следующему элементу списка
-	}
 	return temp; // возвращаем указатель на последний элемент
 }// Функция получения указателя на последний элемент
 
@@ -57,11 +54,12 @@ ListItem* SearchByPriceRange(ListItem* firstItem, float low, float high)
 {
 	if (firstItem == nullptr) return nullptr;
 	ListItem* newList = new ListItem;
+	newList = nullptr;
 	while (firstItem != nullptr)
 	{
 		if (firstItem->price <= high && firstItem->price >= low)
 			AddLast(newList, firstItem->id, firstItem->name, firstItem->price, firstItem->count);
-		firstItem = firstItem->next;
+		firstItem = firstItem->next;	// двигаемся дальше по списку
 	}
 	return newList;
 }
