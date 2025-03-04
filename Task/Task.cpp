@@ -5,43 +5,51 @@
 #include "Task.h"
 #include <iostream>
 
-void AddFirst(ListItem* newList, ListItem* firstItem)
+void AddFirst(ListItem* &firstItem, int productId, const char* productName, float productPrice, float productCount)
 {
-	ListItem* temp = new ListItem;
-	temp->id = firstItem->id;
-	strcpy_s(temp->name, firstItem->name);
-	temp->price = firstItem->price;
-	temp->count = firstItem->count;
-	newList->next = temp;
+	ListItem* temp = new ListItem; // создаем в памяти новый элемент списка
+	temp->id = productId;   // присваиваем полям элемента нужные значения
+	strcpy_s(temp->name, productName); // имя продукта - это стока C-Style, поэтому копируем ее с помощью специальной функции копирования строк
+	temp->price = productPrice; // присваиваем полям элемента нужные значения
+	temp->count = productCount; // присваиваем полям элемента нужные значения
+	temp->next = firstItem; // нам нужно встроить элемент в начало списка, поэтому
+	// указатель next настраиваем таким образом, чтобы он указывал на элемент
+	// который ранее был первым (на него указывает first)
+	firstItem = temp;       // а теперь делаем, чтобы first указывал на наш созданный элемент
 }
 
-ListItem* GetLast(ListItem* newList)
+ListItem* GetLast(ListItem* firstItem)
 {
-	if (newList == nullptr) return nullptr; // если список пуст, то вернем пустой указатель
-	auto temp = newList; // временной переменной присваиваем указатель на первый элемент
+	if (firstItem == nullptr) return nullptr; // если список пуст, то вернем пустой указатель
+	auto temp = firstItem; // временной переменной присваиваем указатель на первый элемент
 	while (temp->next != nullptr) // пока ее поле next не пустой указатель (если пустой, то мы достигли последнего элемента!)
 	{
 		// запомните это присваивание - это переход к следующему в списке элементу
 		temp = temp->next;  // перемещаемся к следующему элементу списка
 	}
 	return temp; // возвращаем указатель на последний элемент
-}
+}// Функция получения указателя на последний элемент
 
-void AddLast(ListItem* newList, ListItem* firstItem)
+
+ListItem* AddLast(ListItem* &firstItem, int productId, const char* productName, float productPrice, float productCount)
 {
 	if (firstItem == nullptr) // если список пуст, вызовем функцию добавления в начало списка
-		AddFirst(newList, firstItem);
+	{
+		AddFirst(firstItem, productId, productName, productPrice, productCount);
+		return firstItem;
+	}
 	ListItem* temp = new ListItem; // создаем в памяти новый элемент списка
-	temp->id = firstItem->id;   // присваиваем полям элемента нужные значения
-	strcpy_s(temp->name, firstItem->name);
-	temp->price = firstItem->price;
-	temp->count = firstItem->count;
+	temp->id = productId;   // присваиваем полям элемента нужные значения
+	strcpy_s(temp->name, productName); // имя продукта - это стока C-Style, поэтому копируем ее с помощью специальной функции копирования строк
+	temp->price = productPrice; // присваиваем полям элемента нужные значения
+	temp->count = productCount; // присваиваем полям элемента нужные значения
 	temp->next = nullptr; // нам нужно встроить элемент в конец списка, поэтому
 	// указатель next настраиваем таким образом, чтобы он был пустым
 	// который ранее был первым (на него указывает first)
-	GetLast(newList)->next = temp;    // а теперь делаем, чтобы элемент, который до этого был последним
+	GetLast(firstItem)->next = temp;    // а теперь делаем, чтобы элемент, который до этого был последним
 	// (а его мы получаем с помощью уже созданной GetLast)
 	// ссылался на наш новый элемент
+	return temp; // возвращаем указатель на последний элемент
 }
 
 
@@ -52,11 +60,8 @@ ListItem* SearchByPriceRange(ListItem* firstItem, float low, float high)
 	while (firstItem != nullptr)
 	{
 		if (firstItem->price <= high && firstItem->price >= low)
-		{
-			//AddFirst(newList, firstItem);
-			auto lastItem = GetLast(newList);
-			AddLast(newList, firstItem);
-		}
+			AddLast(newList, firstItem->id, firstItem->name, firstItem->price, firstItem->count);
+		firstItem = firstItem->next;
 	}
 	return newList;
 }
@@ -70,11 +75,11 @@ ListItem* SearchByPriceRange(ListItem* firstItem, float low, float high)
 
 struct ListItem
 {
-    int id;
-    char name[30];
-    float price;
-    float count;
-    ListItem* next;
+	int id;
+	char name[30];
+	float price;
+	float count;
+	ListItem* next;
 };
 
 1. Функция должна иметь имя SearchByPriceRange
